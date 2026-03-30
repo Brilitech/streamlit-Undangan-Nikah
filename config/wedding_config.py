@@ -1,77 +1,8 @@
 """
 🎉 KONFIGURASI UNDANGAN PERNIKAHAN
-Customize semua data di file ini saja!
+Pusat Data: Ubah semua informasi mempelai, acara, dan aset di file ini!
+Catatan: Tema visual (Emas & Putih) sudah diatur secara permanen di app.py
 """
-
-# ========== THEME & COLORS ==========
-# Pilihan: "gold", "rose", "navy", "forest", "lavender", "monochrome", "rustic", "blush"
-THEME = "gold"
-
-# Custom theme (jika THEME = None)
-CUSTOM_THEME = {
-    "primary": "#D4AF37",
-    "primary_light": "#F4E4C1",
-    "primary_dark": "#8B7355",
-    "secondary": "#5F7161",
-    "background": "#FFFFFF",
-    "background_alt": "#F8F6F0",
-    "text": "#2C3E50",
-    "text_light": "#7F8C8D",
-}
-
-# Theme Presets
-THEMES = {
-    "gold": {
-        "primary": "#D4AF37",
-        "primary_light": "#F4E4C1",
-        "primary_dark": "#8B7355",
-        "secondary": "#5F7161",
-        "background": "#FFFFFF",
-        "background_alt": "#F8F6F0",
-        "text": "#2C3E50",
-        "text_light": "#7F8C8D",
-    },
-    "rose": {
-        "primary": "#E8B4B8",
-        "primary_light": "#F5D6D8",
-        "primary_dark": "#C97C81",
-        "secondary": "#A8DADC",
-        "background": "#FFFFFF",
-        "background_alt": "#FFF5F7",
-        "text": "#2C3E50",
-        "text_light": "#7F8C8D",
-    },
-    "navy": {
-        "primary": "#2C3E50",
-        "primary_light": "#5D6D7E",
-        "primary_dark": "#1C2833",
-        "secondary": "#D4AF37",
-        "background": "#FFFFFF",
-        "background_alt": "#F4F6F7",
-        "text": "#2C3E50",
-        "text_light": "#7F8C8D",
-    },
-    "forest": {
-        "primary": "#4A7C59",
-        "primary_light": "#86A789",
-        "primary_dark": "#2F5233",
-        "secondary": "#8B7355",
-        "background": "#FFFFFF",
-        "background_alt": "#F4F1E8",
-        "text": "#2C3E50",
-        "text_light": "#7F8C8D",
-    },
-    "lavender": {
-        "primary": "#B4A7D6",
-        "primary_light": "#D4C5F9",
-        "primary_dark": "#8B7BB8",
-        "secondary": "#F4D9D0",
-        "background": "#FFFFFF",
-        "background_alt": "#F9F7FF",
-        "text": "#2C3E50",
-        "text_light": "#7F8C8D",
-    },
-}
 
 # ========== DATA MEMPELAI ==========
 GROOM = {
@@ -96,12 +27,12 @@ BRIDE = {
 
 # ========== EVENT DETAILS ==========
 AKAD = {
-    "date": "2026-06-15",  # Format: YYYY-MM-DD
+    "date": "2026-06-15",  # Format Wajib: YYYY-MM-DD
     "time": "08:00",
     "end_time": "09:30",
     "venue": "Masjid Agung Al-Azhar",
     "address": "Jl. Sisingamangaraja No. Kav. 2-4, Jakarta Selatan, DKI Jakarta 12110",
-    "maps_url": "https://maps.google.com/?q=Masjid+Agung+Al-Azhar+Jakarta",
+    "maps_url": "https://maps.google.com/?q=Masjid+Agung+Al-Azhar+Jakarta", # Ganti dengan Link Maps Asli
 }
 
 RESEPSI = {
@@ -110,11 +41,11 @@ RESEPSI = {
     "end_time": "14:00",
     "venue": "Grand Ballroom Hotel Mulia",
     "address": "Jl. Asia Afrika Senayan, Jakarta Pusat, DKI Jakarta 10270",
-    "maps_url": "https://maps.google.com/?q=Hotel+Mulia+Jakarta",
+    "maps_url": "https://maps.google.com/?q=Hotel+Mulia+Senayan", # Ganti dengan Link Maps Asli
 }
 
 # ========== GALLERY ==========
-# Taruh foto di folder assets/gallery/
+# Taruh foto di folder assets/gallery/ (Bisa tambah atau kurangi baris sesuai jumlah foto)
 GALLERY = [
     {"src": "assets/gallery/1.jpg", "alt": "Prewedding 1"},
     {"src": "assets/gallery/2.jpg", "alt": "Prewedding 2"},
@@ -140,15 +71,16 @@ GIFTS = [
     },
     {
         "type": "address",
-        "label": "Kirim Hadiah",
+        "label": "Kirim Kado / Hadiah Fisik",
         "address": "Jl. Mawar No. 10, Perumahan Griya Asri, Jakarta Selatan 12345",
         "phone": "0812-3456-7890",
     },
 ]
 
 # ========== MUSIC ==========
+# Pastikan file audio (flac/mp3/wav) ada di folder assets/music/
 MUSIC = {
-    "src": "assets/music/background.mp3",
+    "src": "assets/music/background.flac", # Telah disesuaikan ke format .flac
     "title": "Beautiful In White - Shane Filan",
 }
 
@@ -162,20 +94,22 @@ QURAN_QUOTE = {
 # ========== HASHTAG ==========
 HASHTAG = "#WahyuHaliza2026"
 
-# ========== FEATURE TOGGLES ==========
+# ========== FEATURE TOGGLES (PENGATURAN FITUR) ==========
+# Ubah True menjadi False jika ada fitur/section yang ingin disembunyikan
 FEATURES = {
-    "music": True,           # Background music
-    "countdown": True,       # Countdown timer
-    "rsvp": True,           # RSVP form
-    "gifts": True,          # Amplop digital
-    "gallery": True,        # Photo gallery
-    "guest_messages": True, # Ucapan tamu
-    "social_share": True,   # Share ke sosmed
+    "music": True,          # Background music di sidebar
+    "countdown": True,      # Countdown timer (Menghitung Hari)
+    "rsvp": True,           # Form konfirmasi kehadiran (RSVP)
+    "gifts": True,          # Amplop digital (Rekening/Alamat)
+    "gallery": True,        # Galeri foto prewedding
+    "guest_messages": True, # Buku tamu / Ucapan doa
+    "social_share": True,   # Tombol bagikan ke WA/Sosmed
 }
 
 # ========== SEO & META ==========
+# Muncul saat link undangan dibagikan ke WhatsApp atau Sosmed
 META = {
     "title": f"Undangan Pernikahan {GROOM['name']} & {BRIDE['name']}",
-    "description": f"Undangan pernikahan {GROOM['full_name']} dan {BRIDE['full_name']}",
+    "description": f"Merupakan suatu kehormatan bagi kami mengundang Bapak/Ibu untuk hadir di hari bahagia {GROOM['name']} dan {BRIDE['name']}.",
     "image": "assets/images/cover.jpg",
 }
