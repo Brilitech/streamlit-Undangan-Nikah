@@ -206,12 +206,23 @@ if FEATURES.get('music', False):
         st.sidebar.header("🎵 Background Music")
         st.sidebar.info(f"Now Playing: {MUSIC['title']}")
         
+        # Deteksi format audio secara otomatis
+        file_ext = os.path.splitext(MUSIC['src'])[1].lower()
+        if file_ext == '.flac':
+            audio_format = 'audio/flac'
+        elif file_ext == '.wav':
+            audio_format = 'audio/wav'
+        elif file_ext == '.ogg':
+            audio_format = 'audio/ogg'
+        else:
+            audio_format = 'audio/mpeg' # Default MP3
+            
         try:
             with open(MUSIC['src'], "rb") as audio_file:
                 audio_bytes = audio_file.read()
-                st.sidebar.audio(audio_bytes, format="audio/mp3")
+                st.sidebar.audio(audio_bytes, format=audio_format)
         except Exception as e:
-            st.sidebar.error("Gagal memuat musik.")
+            st.sidebar.error("❌ Gagal memuat file musik.")
     else:
         st.sidebar.warning("⚠️ File musik tidak ditemukan. Pastikan path di config benar.")
 
