@@ -80,7 +80,7 @@ GIFTS = [
 # ========== MUSIC ==========
 # Pastikan file audio (flac/mp3/wav) ada di folder assets/music/
 MUSIC = {
-    "src": "assets/music/background.flac", # Telah disesuaikan ke format .flac
+    "src": "assets/music/I_Need_You.flac", # Telah disesuaikan ke format .flac
     "title": "Beautiful In White - Shane Filan",
 }
 
