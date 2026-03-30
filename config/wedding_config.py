@@ -80,7 +80,7 @@ GIFTS = [
 # ========== MUSIC ==========
 # Pastikan file audio (flac/mp3/wav) ada di folder assets/music/
 MUSIC = {
-    "src": "assets/music/bg.flac", # Telah disesuaikan ke format .flac
+    "src": "assets/music/background.mp3", # Telah disesuaikan ke format .flac
     "title": "When I Need You - Celine Dion",
 }
 
