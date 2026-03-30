@@ -202,12 +202,17 @@ render_footer(HASHTAG, GROOM['name'], BRIDE['name'])
 
 # ========== MUSIC PLAYER (Optional) ==========
 if FEATURES.get('music', False):
-    if os.path.exists(MUSIC['src']):
+    import os
+    # Menggunakan absolute path agar file lebih mudah ditemukan
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    music_path = os.path.join(base_dir, MUSIC['src'])
+    
+    if os.path.exists(music_path):
         st.sidebar.header("🎵 Background Music")
         st.sidebar.info(f"Now Playing: {MUSIC['title']}")
         
         # Deteksi format audio secara otomatis
-        file_ext = os.path.splitext(MUSIC['src'])[1].lower()
+        file_ext = os.path.splitext(music_path)[1].lower()
         if file_ext == '.flac':
             audio_format = 'audio/flac'
         elif file_ext == '.wav':
@@ -218,13 +223,14 @@ if FEATURES.get('music', False):
             audio_format = 'audio/mpeg' # Default MP3
             
         try:
-            with open(MUSIC['src'], "rb") as audio_file:
+            with open(music_path, "rb") as audio_file:
                 audio_bytes = audio_file.read()
-                st.sidebar.audio(audio_bytes, format=audio_format)
+                # TAMBAHKAN autoplay=True DI SINI
+                st.sidebar.audio(audio_bytes, format=audio_format, autoplay=True)
         except Exception as e:
             st.sidebar.error("❌ Gagal memuat file musik.")
     else:
-        st.sidebar.warning("⚠️ File musik tidak ditemukan. Pastikan path di config benar.")
+        st.sidebar.warning(f"⚠️ File musik tidak ditemukan di path: {music_path}")
 
 # ========== SIDEBAR INFO ==========
 with st.sidebar:
