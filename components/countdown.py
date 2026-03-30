@@ -35,8 +35,8 @@ Terima kasih atas doa dan kehadiran Anda
 </div>
 """, unsafe_allow_html=True)
     else:
-        # Display countdown
-        col1, col2, col3, col4 = st.columns(4)
+        # Mengubah menjadi 3 kolom agar proporsional (Hari, Jam, Menit)
+        col1, col2, col3 = st.columns(3)
         
         # Gaya seragam untuk setiap kotak countdown
         box_style = "background-color: var(--card-bg); border: 1px solid var(--primary); border-radius: 10px; padding: 1.5rem 1rem; text-align: center; box-shadow: 0 4px 6px rgba(212, 175, 55, 0.1);"
@@ -67,17 +67,9 @@ Terima kasih atas doa dan kehadiran Anda
 </div>
 """, unsafe_allow_html=True)
         
-        with col4:
-            st.markdown(f"""
-<div class="countdown-box fade-in-up" style="{box_style}">
-<div class="countdown-number" style="{number_style}">{countdown['seconds']}</div>
-<div class="countdown-label" style="{label_style}">Detik</div>
-</div>
-""", unsafe_allow_html=True)
-        
-        # Add auto-refresh note
+        # Pesan keterangan yang lebih masuk akal karena detiknya hilang
         st.markdown("""
-<p style="text-align: center; color: var(--text-light); font-size: 0.85rem; margin-top: 1.5rem;">
-⏰ Reload halaman untuk update waktu
+<p style="text-align: center; color: var(--text-light); font-size: 0.85rem; margin-top: 2rem; font-style: italic;">
+* Waktu akan diperbarui setiap kali Anda memuat ulang halaman
 </p>
 """, unsafe_allow_html=True)
