@@ -22,6 +22,14 @@ from components.gift import render_gift_section
 from components.rsvp import render_rsvp_section, render_guest_messages
 from components.footer import render_footer, render_social_share
 
+# ========== SESSION STATE SETUP ==========
+# Melacak apakah tamu sudah mengklik tombol "Buka Undangan"
+if 'opened' not in st.session_state:
+    st.session_state.opened = False
+
+def open_invitation():
+    st.session_state.opened = True
+
 # ========== PAGE CONFIG ==========
 st.set_page_config(
     page_title=META['title'],
@@ -30,140 +38,122 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# ========== PERMANENT THEME SETUP (WHITE & GOLD) ==========
-# CSS Kustom untuk tampilan putih bersih dengan aksen emas
+# ========== PERMANENT THEME & BUTTON CSS ==========
 custom_css = """
 <style>
-    /* Variabel Warna */
     :root {
-        --background-color: #FFFFFF; /* Putih bersih */
-        --primary: #D4AF37;          /* Emas Klasik */
-        --primary-dark: #B5952F;     /* Emas Gelap (Hover) */
-        --text-color: #333333;       /* Abu-abu gelap untuk teks */
-        --text-light: #666666;       /* Abu-abu terang untuk subteks */
-        --card-bg: #FAFAFA;          /* Putih tulang untuk section card */
-        --border-color: #EAEAEA;
+        --primary: #D4AF37;
+        --primary-dark: #B5952F;
+        --text-color: #333333;
     }
 
-    /* Typography */
     h1, h2, h3, .title, .subtitle {
         color: var(--primary) !important;
         text-align: center;
-        font-family: 'Georgia', serif; /* Font klasik untuk undangan */
+        font-family: 'Georgia', serif;
     }
 
-    p, .body-text {
-        color: var(--text-color);
-        line-height: 1.6;
-    }
-
-    /* Ornamen & Separator */
-    .separator {
-        color: var(--primary);
-        font-size: 1.5rem;
-        text-align: center;
-        margin: 1.5rem 0;
-    }
-
-    /* Streamlit UI Overrides (Tombol & Input) */
+    /* Styling Tombol Standar */
     .stButton>button {
         background-color: var(--primary);
         color: white;
         border: none;
         border-radius: 8px;
-        padding: 0.5rem 2rem;
-        font-weight: bold;
         transition: all 0.3s ease;
     }
-    .stButton>button:hover {
-        background-color: var(--primary-dark);
-        color: white;
-        transform: translateY(-2px);
-    }
 
-    .stTextInput>div>div>input, .stTextArea>div>div>textarea {
-        background-color: white;
-        border: 1px solid var(--border-color);
-        border-radius: 8px;
+    /* Styling Khusus Tombol Buka Undangan (Primary) */
+    .stButton>button[kind="primary"] {
+        background: linear-gradient(135deg, #D4AF37 0%, #B5952F 100%) !important;
+        color: white !important;
+        border: none !important;
+        padding: 0.8rem 2.5rem !important;
+        font-size: 1.2rem !important;
+        border-radius: 50px !important;
+        box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4) !important;
+        font-weight: bold !important;
+        display: block;
+        margin: 0 auto;
     }
-    .stTextInput>div>div>input:focus, .stTextArea>div>div>textarea:focus {
-        border-color: var(--primary);
-        box-shadow: 0 0 0 1px var(--primary);
+    
+    .stButton>button[kind="primary"]:hover {
+        transform: scale(1.05) translateY(-2px);
+        box-shadow: 0 6px 20px rgba(212, 175, 55, 0.6) !important;
     }
 </style>
 """
 st.markdown(custom_css, unsafe_allow_html=True)
 
-# ========== FIXED BACKGROUND SETUP (SCROLLESS) ==========
+# ========== FIXED BACKGROUND FUNCTION ==========
 def set_fixed_background(image_path):
-    """Fungsi untuk memasang background gambar scrolless (fixed)"""
     if os.path.exists(image_path):
         with open(image_path, "rb") as image_file:
             encoded_string = base64.b64encode(image_file.read()).decode()
             
         bg_css = f"""
         <style>
-            /* Mengatur background gambar agar memenuhi layar dan scrolless (fixed) */
             .stApp {{
                 background-image: url("data:image/jpeg;base64,{encoded_string}");
                 background-size: cover;
                 background-position: center center;
-                background-repeat: no-repeat;
                 background-attachment: fixed !important;
             }}
-            
-            /* Mengubah container aplikasi menjadi transparan elegan (Glassmorphism) */
             .block-container {{
-                background-color: rgba(255, 255, 255, 0.88) !important;
-                backdrop-filter: blur(5px);
+                background-color: rgba(255, 255, 255, 0.9) !important;
+                backdrop-filter: blur(8px);
                 border-radius: 20px;
-                box-shadow: 0 15px 35px rgba(0,0,0,0.1);
                 max-width: 1000px;
-                padding-top: 2rem !important;
-                padding-bottom: 3rem !important;
+                padding: 2rem !important;
                 margin-top: 2rem !important;
                 margin-bottom: 2rem !important;
             }}
-            
-            /* Hide top padding Streamlit default */
-            .stAppHeader {{
-                display: none;
-            }}
+            .stAppHeader {{ display: none; }}
         </style>
         """
         st.markdown(bg_css, unsafe_allow_html=True)
-    else:
-        # Peringatan jika gambar tidak ada (hanya muncul di sidebar agar tidak merusak tampilan utama)
-        st.sidebar.warning(f"⚠️ Background tidak ditemukan di: {image_path}")
 
-# Panggil fungsi background dengan letak folder yang Anda sebutkan
 set_fixed_background("assets/images/bg_freepik.jpg")
 
-
-# ========== QUERY PARAMS (Guest Name) ==========
-# Membaca nama tamu dari URL (contoh: ?to=Budi)
+# ========== QUERY PARAMS ==========
 query_params = st.query_params
 guest_name = query_params.get("to", "Bapak/Ibu/Saudara/i")
 
-# ========== SECTIONS ==========
+# ==========================================================
+# 1. LOGIKA HALAMAN DEPAN (COVER & TOMBOL BUKA)
+# ==========================================================
+if not st.session_state.opened:
+    # Hanya tampilkan cover
+    render_cover(guest_name)
+    
+    st.markdown("<br>", unsafe_allow_html=True)
+    
+    # Kolom untuk menengahkan tombol
+    col1, col2, col3 = st.columns([1, 1.2, 1])
+    with col2:
+        # Tombol Buka Undangan dengan ikon amplop
+        st.button("📩 Buka Undangan", on_click=open_invitation, type="primary", use_container_width=True)
+    
+    # Berhenti di sini agar bagian bawah tidak terlihat
+    st.stop()
 
-# 1. COVER SECTION
-render_cover(guest_name)
-st.markdown("<br><br>", unsafe_allow_html=True)
 
-# 2. HERO SECTION (Nama Mempelai)
+# ==========================================================
+# 2. ISI UNDANGAN (MUNCUL SETELAH TOMBOL DIKLIK)
+# ==========================================================
+
+# 2. HERO SECTION
 render_hero(GROOM, BRIDE)
 st.markdown("<br>", unsafe_allow_html=True)
 
-# 3. QUOTE SECTION (Ayat Al-Quran)
+# 3. QUOTE SECTION
 render_quote(QURAN_QUOTE)
 st.markdown("<br><br>", unsafe_allow_html=True)
 
-# 4. COUPLE SECTION (Profil Mempelai)
+# 4. COUPLE SECTION
 render_couple_section(GROOM, BRIDE)
 st.markdown("<br><br>", unsafe_allow_html=True)
 
-# 5. EVENT SECTION (Akad & Resepsi)
+# 5. EVENT SECTION
 render_event_section(AKAD, RESEPSI)
 st.markdown("<br><br>", unsafe_allow_html=True)
 
@@ -177,7 +167,7 @@ if FEATURES.get('gallery', False):
     render_gallery_section(GALLERY)
     st.markdown("<br><br>", unsafe_allow_html=True)
 
-# 8. GIFT SECTION (Amplop Digital)
+# 8. GIFT SECTION
 if FEATURES.get('gifts', False):
     render_gift_section(GIFTS)
     st.markdown("<br><br>", unsafe_allow_html=True)
@@ -200,10 +190,8 @@ if FEATURES.get('social_share', False):
 # 12. FOOTER
 render_footer(HASHTAG, GROOM['name'], BRIDE['name'])
 
-# ========== MUSIC PLAYER (Optional) ==========
+# ========== MUSIC PLAYER (Dipicu Setelah Klik Buka) ==========
 if FEATURES.get('music', False):
-    import os
-    # Menggunakan absolute path agar file lebih mudah ditemukan
     base_dir = os.path.dirname(os.path.abspath(__file__))
     music_path = os.path.join(base_dir, MUSIC['src'])
     
@@ -211,41 +199,22 @@ if FEATURES.get('music', False):
         st.sidebar.header("🎵 Background Music")
         st.sidebar.info(f"Now Playing: {MUSIC['title']}")
         
-        # Deteksi format audio secara otomatis
         file_ext = os.path.splitext(music_path)[1].lower()
-        if file_ext == '.flac':
-            audio_format = 'audio/flac'
-        elif file_ext == '.wav':
-            audio_format = 'audio/wav'
-        elif file_ext == '.ogg':
-            audio_format = 'audio/ogg'
-        else:
-            audio_format = 'audio/mpeg' # Default MP3
+        audio_format = 'audio/mpeg' if file_ext == '.mp3' else f'audio/{file_ext[1:]}'
             
         try:
             with open(music_path, "rb") as audio_file:
                 audio_bytes = audio_file.read()
-                # TAMBAHKAN autoplay=True DI SINI
+                # Karena user sudah berinteraksi (klik tombol), autoplay akan bekerja
                 st.sidebar.audio(audio_bytes, format=audio_format, autoplay=True)
-        except Exception as e:
-            st.sidebar.error("❌ Gagal memuat file musik.")
-    else:
-        st.sidebar.warning(f"⚠️ File musik tidak ditemukan di path: {music_path}")
+        except Exception:
+            st.sidebar.error("❌ Gagal memuat musik.")
 
 # ========== SIDEBAR INFO ==========
 with st.sidebar:
     st.header("ℹ️ Info Undangan")
     st.markdown(f"""
     **Mempelai:** {GROOM['name']} & {BRIDE['name']}
-    
-    **Tanggal Akad:** {AKAD['date']}
-    
+    **Tanggal:** {AKAD['date']}
     **Lokasi:** {AKAD['venue']}
-    
-    ---
-    
-    💡 **Tips:**
-    - Scroll ke bawah untuk melihat semua section
-    - Isi form RSVP untuk konfirmasi kehadiran
-    - Bagikan undangan ke teman dan keluarga
     """)
