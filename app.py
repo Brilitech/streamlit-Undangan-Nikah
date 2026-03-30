@@ -4,11 +4,13 @@ Template undangan pernikahan modern dengan Streamlit
 """
 
 import streamlit as st
+import base64
+import os
 
 # Impor semua konfigurasi
 from config.wedding_config import *
 
-# Hapus impor 'get_theme_colors' dan 'apply_custom_css' karena kita menggunakan tema permanen
+# Impor komponen
 from components.cover import render_cover
 from components.hero import render_hero
 from components.quote import render_quote
@@ -23,7 +25,7 @@ from components.footer import render_footer, render_social_share
 # ========== PAGE CONFIG ==========
 st.set_page_config(
     page_title=META['title'],
-    page_icon="💒",
+    page_icon="💍",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
@@ -41,19 +43,6 @@ custom_css = """
         --text-light: #666666;       /* Abu-abu terang untuk subteks */
         --card-bg: #FAFAFA;          /* Putih tulang untuk section card */
         --border-color: #EAEAEA;
-    }
-
-    /* Reset & Container Utama */
-    .block-container {
-        padding-top: 0rem;
-        padding-bottom: 2rem;
-        max-width: 1000px;
-        background-color: var(--background-color);
-        color: var(--text-color);
-    }
-    
-    .stApp {
-        background-color: var(--background-color);
     }
 
     /* Typography */
@@ -104,6 +93,52 @@ custom_css = """
 </style>
 """
 st.markdown(custom_css, unsafe_allow_html=True)
+
+# ========== FIXED BACKGROUND SETUP (SCROLLESS) ==========
+def set_fixed_background(image_path):
+    """Fungsi untuk memasang background gambar scrolless (fixed)"""
+    if os.path.exists(image_path):
+        with open(image_path, "rb") as image_file:
+            encoded_string = base64.b64encode(image_file.read()).decode()
+            
+        bg_css = f"""
+        <style>
+            /* Mengatur background gambar agar memenuhi layar dan scrolless (fixed) */
+            .stApp {{
+                background-image: url("data:image/jpeg;base64,{encoded_string}");
+                background-size: cover;
+                background-position: center center;
+                background-repeat: no-repeat;
+                background-attachment: fixed !important;
+            }}
+            
+            /* Mengubah container aplikasi menjadi transparan elegan (Glassmorphism) */
+            .block-container {{
+                background-color: rgba(255, 255, 255, 0.88) !important;
+                backdrop-filter: blur(5px);
+                border-radius: 20px;
+                box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+                max-width: 1000px;
+                padding-top: 2rem !important;
+                padding-bottom: 3rem !important;
+                margin-top: 2rem !important;
+                margin-bottom: 2rem !important;
+            }}
+            
+            /* Hide top padding Streamlit default */
+            .stAppHeader {{
+                display: none;
+            }}
+        </style>
+        """
+        st.markdown(bg_css, unsafe_allow_html=True)
+    else:
+        # Peringatan jika gambar tidak ada (hanya muncul di sidebar agar tidak merusak tampilan utama)
+        st.sidebar.warning(f"⚠️ Background tidak ditemukan di: {image_path}")
+
+# Panggil fungsi background dengan letak folder yang Anda sebutkan
+set_fixed_background("assets/images/bg_freepik.jpg")
+
 
 # ========== QUERY PARAMS (Guest Name) ==========
 # Membaca nama tamu dari URL (contoh: ?to=Budi)
@@ -167,7 +202,6 @@ render_footer(HASHTAG, GROOM['name'], BRIDE['name'])
 
 # ========== MUSIC PLAYER (Optional) ==========
 if FEATURES.get('music', False):
-    import os
     if os.path.exists(MUSIC['src']):
         st.sidebar.header("🎵 Background Music")
         st.sidebar.info(f"Now Playing: {MUSIC['title']}")
