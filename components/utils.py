@@ -108,7 +108,7 @@ def create_ornament():
     """Create decorative ornament"""
     # BUG FIX: Ditulis rata kiri menjadi 1 baris saja tanpa indentasi
     # Menggunakan var(--primary) agar warnanya otomatis menjadi emas
-    return '<div style="text-align: center; color: var(--primary); font-size: 2.2rem; margin: 1.5rem 0; text-shadow: 1px 1px 2px rgba(212,175,55,0.2);">❦ ◈ ❦</div>'
+    return '<div style="text-align: center; color: var(--primary); font-size: 2.2rem; margin: 1.5rem 0; text-shadow: 1px 1px 2px rgba(212,175,55,0.2);">-ˋˏ ༻❁༺ ˎˊ-</div>'
 
 def create_divider():
     """Create decorative divider"""
